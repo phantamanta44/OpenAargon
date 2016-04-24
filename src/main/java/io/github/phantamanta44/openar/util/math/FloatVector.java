@@ -55,4 +55,13 @@ public class FloatVector {
 		return new FloatVector(this.x * multiplier, this.y * multiplier);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof FloatVector) {
+			FloatVector a = (FloatVector)o;
+			return x == a.x && y == a.y;
+		}
+		return false;
+	}
+	
 }

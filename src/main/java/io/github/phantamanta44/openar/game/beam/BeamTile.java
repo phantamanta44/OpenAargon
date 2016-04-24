@@ -7,6 +7,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BeamTile {
 
+	public static final BeamTile EMPTY = new BeamTile() {
+		@Override
+		public void clear() {
+			throw new UnsupportedOperationException("Cannot modify immutable BeamTile!");
+		}
+
+		@Override
+		public void putOut(Beam beam) {
+			throw new UnsupportedOperationException("Cannot modify immutable BeamTile!");
+		}
+
+		@Override
+		public void putIn(Beam beam) {
+			throw new UnsupportedOperationException("Cannot modify immutable BeamTile!");
+		}
+	};
+
 	private Map<Direction, Beam> in, out;
 
 	public BeamTile() {
@@ -34,4 +51,5 @@ public class BeamTile {
 		in.clear();
 		out.clear();
 	}
+
 }

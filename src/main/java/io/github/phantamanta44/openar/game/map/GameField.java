@@ -12,7 +12,7 @@ import io.github.phantamanta44.openar.util.Array2D;
 import io.github.phantamanta44.openar.util.math.FloatVector;
 import io.github.phantamanta44.openar.util.math.IntVector;
 
-public class GameField {
+public class GameField implements IGameField {
 
 	private static final String EMPTY_SLOT_PATH = "texture/empty.png";
 
@@ -20,6 +20,7 @@ public class GameField {
 	private Array2D<IGamePiece> pieceGrid = new Array2D<>(20, 13);
 	private Array2D<Integer> rotGrid = new Array2D<>(20, 13);
 	private Array2D<Integer> metaGrid = new Array2D<>(20, 13);
+	private Array2D<Integer> intGrid = new Array2D<>(20, 13);
 	private boolean goal = false, fail = false;
 
 	public GameField() {
@@ -27,6 +28,7 @@ public class GameField {
 		beamGrid.fill(BeamTile::new);
 		rotGrid.fill(() -> 0);
 		metaGrid.fill(() -> 0);
+		intGrid.fill(() -> 0);
 	}
 
 	private void updateBeams() {
@@ -66,13 +68,14 @@ public class GameField {
 		if (fail)
 			Aargon.getLogger().info("SYSTEM FAILING");
 		else if (goal)
-			Aargon.getLogger().info("SYSTEM SOLVED");
+			Aargon.getLogger().info("SYSTEM SOLVED"); // TODO Pass winning/failing state to Aargon and do something
 	}
 
 	public void setPiece(IntVector coords, IGamePiece piece) {
 		pieceGrid.set(coords, piece);
 		rotGrid.set(coords, 0);
 		metaGrid.set(coords, 0);
+		intGrid.set(coords, 0);
 		updateBeams();
 	}
 
@@ -86,23 +89,36 @@ public class GameField {
 		updateBeams();
 	}
 
+	public void setMutability(IntVector coords, int muta) {
+		intGrid.set(coords, muta);
+	}
+
+	@Override
 	public IGamePiece getPiece(IntVector coords) {
 		return pieceGrid.get(coords);
 	}
 
+	@Override
 	public int getRotation(IntVector coords) {
 		return rotGrid.get(coords);
 	}
 
+	@Override
 	public int getMeta(IntVector coords) {
 		return metaGrid.get(coords);
 	}
 
+	@Override
 	public BeamTile getBeams(IntVector coords) {
 		return beamGrid.get(coords);
 	}
 
-	public void bufferRenders(float xSize, float ySize, float ratio) {
+	@Override
+	public int getMutability(IntVector coords) {
+		return intGrid.get(coords);
+	}
+
+	public synchronized void bufferRenders(float xSize, float ySize, float ratio) {
 		int origX = (int)-xSize, origY = (int)(ySize / ratio);
 		pieceGrid.forEach((p, c) -> {
 			if (p != null) {
@@ -119,17 +135,26 @@ public class GameField {
 				if (b.getOut(dir) != null) {
 					FloatVector t = dir.offsetHalf(c);
 					Line4I base = new Line4I(origX + c.getX() * 103 + 52, origY - (c.getY() + 1) * 103 + 52,
-							(int)((float)origX + t.getX() * 103F + 52F), (int)((float)origY - (t.getY() + 1) * 103F + 52F), b.getOut(dir).getColor());
+							(int)((float)origX + t.getX() * 103F + 52F), (int)((float)origY - (t.getY() + 1) * 103F + 52F),
+							b.getOut(dir).getColor(), 0.3F, 1F);
 					RenderManager.bufferLine(base);
-					RenderManager.bufferLine(new Line4I(base.x1, base.y1, base.x2, base.y2, base.r, base.g, base.b, 0.34F, 6F));
+					accompanyLines(base);
 				} else if (b.getIn(dir) != null) {
 					FloatVector t = dir.offsetHalf(c);
 					Line4I base = new Line4I(origX + c.getX() * 103 + 52, origY - (c.getY() + 1) * 103 + 52,
-							(int)((float)origX + t.getX() * 103F + 52F), (int)((float)origY - (t.getY() + 1) * 103F + 52F), b.getIn(dir).getColor());
+							(int)((float)origX + t.getX() * 103F + 52F), (int)((float)origY - (t.getY() + 1) * 103F + 52F),
+							b.getIn(dir).getColor(), 0.3F, 1F);
 					RenderManager.bufferLine(base);
-					RenderManager.bufferLine(new Line4I(base.x1, base.y1, base.x2, base.y2, base.r, base.g, base.b, 0.34F, 6F));
+					accompanyLines(base);
 				}
 			}
 		});
 	}
+
+	private void accompanyLines(Line4I base) {
+		RenderManager.bufferLine(new Line4I(base.x1, base.y1, base.x2, base.y2, base.r, base.g, base.b, 0.1F, 3F));
+		RenderManager.bufferLine(new Line4I(base.x1, base.y1, base.x2, base.y2, base.r, base.g, base.b, 0.1F, 5F));
+		RenderManager.bufferLine(new Line4I(base.x1, base.y1, base.x2, base.y2, base.r, base.g, base.b, 0.1F, 7F));
+	}
+
 }

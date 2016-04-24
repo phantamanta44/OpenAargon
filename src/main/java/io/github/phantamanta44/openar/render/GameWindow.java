@@ -101,9 +101,7 @@ public class GameWindow {
 
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-					GameField field = Aargon.getInstance().getField();
-					if (field != null)
-						field.bufferRenders(WORLD_WIDTH, WORLD_HEIGHT, (float)windowSize.getX() / (float)windowSize.getY());
+					ar.bufferRenders(WORLD_WIDTH, WORLD_HEIGHT, (float)windowSize.getX() / (float)windowSize.getY());
 
 					render();
 					GLFW.glfwSwapBuffers(winId);

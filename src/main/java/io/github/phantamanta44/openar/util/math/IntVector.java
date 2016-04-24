@@ -14,7 +14,6 @@ public class IntVector {
 	};
 
 	private int x, y;
-	private String texturePath;
 
 	public IntVector() {
 		this.x = this.y = 0;
@@ -53,6 +52,17 @@ public class IntVector {
 
 	public IntVector multiply(float multiplier) {
 		return new IntVector((int)((float)this.x * multiplier), (int)((float)this.y * multiplier));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof IntVector) {
+			IntVector a = (IntVector)o;
+			return x == a.x && y == a.y;
+		}
+		else if (o instanceof FloatVector)
+			return promote().equals(o);
+		return false;
 	}
 
 	public FloatVector promote() {

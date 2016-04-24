@@ -3,7 +3,7 @@ package io.github.phantamanta44.openar.game.piece.impl;
 import io.github.phantamanta44.openar.game.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamColor;
-import io.github.phantamanta44.openar.game.map.GameField;
+import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.game.piece.ISourcePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -24,22 +24,22 @@ public class PieceSource implements IGamePiece, ISourcePiece {
 	}
 
 	@Override
-	public Collection<Beam> getBeamsOut(GameField field, IntVector coords, int rot, int meta) {
+	public Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public Collection<Beam> getSourceBeams(GameField field, IntVector coords, int rot, int meta) {
+	public Collection<Beam> getSourceBeams(IGameField field, IntVector coords, int rot, int meta) {
 		return Collections.singletonList(new Beam(BeamColor.values()[meta], Direction.fromRotation(rot)));
 	}
 
 	@Override
-	public String getTexturePath(GameField field, IntVector coords, int rot, int meta) {
+	public String getTexturePath(IGameField field, IntVector coords, int rot, int meta) {
 		return "texture/source.png";
 	}
 
 	@Override
-	public IntVector getTextureOffset(GameField field, IntVector coords, int rot, int meta) {
+	public IntVector getTextureOffset(IGameField field, IntVector coords, int rot, int meta) {
 		return new IntVector((int)Math.floor((float)(System.currentTimeMillis() % 300L) / 75F) * 32, rot * 32);
 	}
 

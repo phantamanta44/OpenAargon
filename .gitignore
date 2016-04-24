@@ -53,3 +53,6 @@ local.properties
 .idea/
 *.iml
 *.ipl
+
+# JVM
+hs_err_pid*.log

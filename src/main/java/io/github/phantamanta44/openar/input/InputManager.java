@@ -40,19 +40,27 @@ public class InputManager {
 		cursorCb = new GLFWCursorPosCallback() {
 			@Override
 			public void invoke(long winId, double x, double y) {
-				mPosX.set((int)x);
-				mPosY.set((int)y);
+				onMouseMove(x, y);
 			}
 		};
 	}
 
 	private void onKey(int key, ButtonAction action, ModifierState mod) {
-		// TODO things
+		ar.onKey(key, action, mod);
 	}
 
 	private void onMouseButton(int btn, ButtonAction action) {
 		int mX = mPosX.get(), mY = mPosY.get();
-		// TODO stuff
+		int cX = (int)Math.floor((float)mX / 52.4F), cY = (int)Math.floor((float)mY / 52.4F);
+		ar.onMouseButton(mX, mY, cX, cY, btn, action);
+	}
+
+	private void onMouseMove(double x, double y) {
+		int mX = (int)x, mY = (int)y;
+		mPosX.set(mX);
+		mPosY.set(mY);
+		int cX = (int)Math.floor((float)mX / 52.4F), cY = (int)Math.floor((float)mY / 52.4F);
+		ar.onMouseMove(mX, mY, cX, cY);
 	}
 
 	public GLFWKeyCallback getKeyCallback() {

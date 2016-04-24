@@ -50,6 +50,7 @@ public enum BeamColor {
 			case "y":
 				return YELLOW;
 			case "w":
+			case "x":
 				return WHITE;
 			default:
 				return BLACK;

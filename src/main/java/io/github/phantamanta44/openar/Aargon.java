@@ -1,11 +1,17 @@
 package io.github.phantamanta44.openar;
 
 import io.github.phantamanta44.openar.game.map.GameField;
+import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.map.MapFile;
+import io.github.phantamanta44.openar.game.map.MovementHandler;
 import io.github.phantamanta44.openar.game.piece.PieceRegistry;
+import io.github.phantamanta44.openar.input.ButtonAction;
 import io.github.phantamanta44.openar.input.InputManager;
+import io.github.phantamanta44.openar.input.KeyCodes;
+import io.github.phantamanta44.openar.input.ModifierState;
 import io.github.phantamanta44.openar.render.GameWindow;
 import io.github.phantamanta44.openar.util.ThreadPoolFactory;
+import io.github.phantamanta44.openar.util.math.IntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +28,7 @@ public class Aargon {
 
 	private MapFile map;
 	private GameField field;
+	private MovementHandler pieceMover;
 
 	static void init() {
 		if (instance == null)
@@ -59,6 +66,7 @@ public class Aargon {
 
 		logger.info("Initializing input manager...");
 		inputManager = new InputManager();
+		pieceMover = new MovementHandler();
 
 		logger.info("Building piece registry...");
 		PieceRegistry.init();
@@ -82,8 +90,40 @@ public class Aargon {
 		map.populate(field);
 	}
 
-	public GameField getField() {
+	public IGameField getField() {
 		return field;
+	}
+
+	public void onKey(int key, ButtonAction action, ModifierState mod) {
+		if (key == KeyCodes.KEY_F5 && action == ButtonAction.RELEASE) {
+			setMap(map);
+			pieceMover.clearHand();
+		}
+	}
+
+	public void onMouseButton(int mX, int mY, int cX, int cY, int btn, ButtonAction action) {
+		if (btn == 0 || btn == 1) {
+			int dir = (btn == 1) ? 1 : -1;
+			switch (action) {
+				case PRESS:
+					pieceMover.grab(field, new IntVector(cX, cY), dir);
+					break;
+				case RELEASE:
+					pieceMover.drop(field, new IntVector(cX, cY), dir);
+					break;
+			}
+		}
+	}
+
+	public void onMouseMove(int mX, int mY, int cX, int cY) {
+		pieceMover.updatePos(mX, mY, cX, cY);
+	}
+
+	public synchronized void bufferRenders(float xSize, float ySize, float ratio) {
+		if (field != null) {
+			field.bufferRenders(xSize, ySize, ratio);
+			pieceMover.bufferRenders(xSize, ySize, ratio);
+		}
 	}
 
 	public void destruct() {
