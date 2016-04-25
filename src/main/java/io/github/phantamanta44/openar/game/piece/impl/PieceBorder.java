@@ -21,7 +21,7 @@ public class PieceBorder implements IGamePiece {
 	}
 
 	@Override
-	public Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta) {
+	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
 		return Collections.emptyList();
 	}
 

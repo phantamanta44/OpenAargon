@@ -1,15 +1,12 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
-import io.github.phantamanta44.openar.game.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
-import io.github.phantamanta44.openar.game.beam.BeamTile;
 import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 public class PieceAir implements IGamePiece {
 
@@ -24,15 +21,8 @@ public class PieceAir implements IGamePiece {
 	}
 
 	@Override
-	public Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta) {
-		List<Beam> out = new ArrayList<>();
-		BeamTile beams = field.getBeams(coords);
-		for (Direction dir : Direction.values()) {
-			Beam beam = beams.getIn(dir);
-			if (beam != null)
-				out.add(new Beam(beam.getColor(), beam.getDir().getOpposite()));
-		}
-		return out;
+	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
+		return Collections.singleton(new Beam(in.getColor(), in.getDir().getOpposite()));
 	}
 
 	@Override

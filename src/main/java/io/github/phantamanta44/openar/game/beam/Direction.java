@@ -1,4 +1,4 @@
-package io.github.phantamanta44.openar.game;
+package io.github.phantamanta44.openar.game.beam;
 
 import io.github.phantamanta44.openar.util.math.FloatVector;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -39,7 +39,16 @@ public enum Direction {
 		return OPPOSITES[ordinal()];
 	}
 
+	public int toRotation() {
+		for (int i = 0; i < ROTATIONS.length; i++) {
+			if (ROTATIONS[i] == this)
+				return i;
+		}
+		return -1;
+	}
+
 	public static Direction fromRotation(int rot) {
 		return ROTATIONS[rot];
 	}
+
 }

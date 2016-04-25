@@ -1,6 +1,6 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
-import io.github.phantamanta44.openar.game.Direction;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
 import io.github.phantamanta44.openar.game.map.IGameField;
@@ -23,7 +23,7 @@ public class PieceTNT implements IFailPiece {
 	}
 
 	@Override
-	public Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta) {
+	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
 		return Collections.emptyList(); // TODO Implement
 	}
 

@@ -1,7 +1,7 @@
 package io.github.phantamanta44.openar.game.map;
 
 import io.github.phantamanta44.openar.Aargon;
-import io.github.phantamanta44.openar.game.Direction;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
 import io.github.phantamanta44.openar.game.piece.*;
@@ -48,7 +48,7 @@ public class GameField implements IGameField {
 		else
 			tile.putOut(beam);
 		if (in != null)
-			in.merge(tile.getOut(beam.getDir()));
+			in.merge(beam);
 		IntVector next = beam.getDir().offset(coords);
 		if (next.getX() < 0 || next.getY() < 0
 				|| next.getX() >= pieceGrid.getWidth() || next.getY() >= pieceGrid.getHeight())
@@ -59,12 +59,17 @@ public class GameField implements IGameField {
 	private void receiveBeam(Beam beam, IntVector coords, BeamTile from) {
 		int rot = getRotation(coords), meta = getMeta(coords);
 		IGamePiece piece = getPiece(coords);
-		beamGrid.get(coords).putIn(new Beam(beam.getColor(), beam.getDir().getOpposite()));
+		BeamTile beams = beamGrid.get(coords);
+		Beam newBeam = new Beam(beam.getColor(), beam.getDir().getOpposite());
+		beams.putIn(newBeam);
+		Beam out = beams.getOut(beam.getDir().getOpposite());
+		if (out != null)
+			out.merge(newBeam);
 		if (piece instanceof IGoalPiece)
 			goal &= ((IGoalPiece)piece).isGoalMet(this, coords, rot, meta);
 		if (piece instanceof IFailPiece)
 			fail &= ((IFailPiece)piece).isFailing(this, coords, rot, meta);
-		piece.getBeamsOut(this, coords, rot, meta).forEach(b -> sourceBeam(b, coords));
+		piece.getReflections(this, coords, rot, meta, new Beam(beam.getColor(), beam.getDir().getOpposite())).forEach(b -> sourceBeam(b, coords));
 		if (fail)
 			Aargon.getLogger().info("SYSTEM FAILING");
 		else if (goal)

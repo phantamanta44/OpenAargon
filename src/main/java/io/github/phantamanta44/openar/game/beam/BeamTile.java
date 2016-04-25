@@ -1,7 +1,5 @@
 package io.github.phantamanta44.openar.game.beam;
 
-import io.github.phantamanta44.openar.game.Direction;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

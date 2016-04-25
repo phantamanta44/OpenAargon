@@ -12,7 +12,7 @@ public interface IGamePiece {
 
 	String getToken();
 
-	Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta);
+	Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in);
 
 	String getTexturePath(IGameField field, IntVector coords, int rot, int meta);
 

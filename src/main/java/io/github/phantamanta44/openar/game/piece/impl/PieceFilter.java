@@ -22,8 +22,11 @@ public class PieceFilter implements IGamePiece {
 	}
 
 	@Override
-	public Collection<Beam> getBeamsOut(IGameField field, IntVector coords, int rot, int meta) {
-		return Collections.emptyList(); // TODO Implement
+	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
+		BeamColor filtered = in.getColor().filter(BeamColor.values()[meta]);
+		if (filtered != BeamColor.BLACK)
+			return Collections.singleton(new Beam(filtered, in.getDir().getOpposite()));
+		return Collections.emptyList();
 	}
 
 	@Override

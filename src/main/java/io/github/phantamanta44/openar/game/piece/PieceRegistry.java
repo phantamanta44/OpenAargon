@@ -12,7 +12,6 @@ public class PieceRegistry {
 	public static final IGamePiece EMPTY = new PieceAir();
 
 	public static void init() {
-		registerPiece(EMPTY);
 		Reflections refl = new Reflections("io.github.phantamanta44.openar.game.piece.impl");
 		for (Class<? extends IGamePiece> clazz : refl.getSubTypesOf(IGamePiece.class)) {
 			try {

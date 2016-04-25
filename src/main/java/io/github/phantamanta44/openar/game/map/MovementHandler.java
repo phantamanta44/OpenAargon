@@ -13,6 +13,7 @@ public class MovementHandler {
 	private volatile IntVector heldCoords;
 	private volatile IntVector mouseCoords;
 	private volatile boolean hasMoved;
+	private volatile GameField heldField;
 
 	public MovementHandler() {
 		mouseCoords = new IntVector();
@@ -32,14 +33,14 @@ public class MovementHandler {
 		if (piece != null && !piece.getToken().equals(" ") && !holdingPiece()) {
 			if (!Mutability.forMask(field.getMutability(coords)).canMove()) {
 				if (Mutability.forMask(field.getMutability(coords)).canRotate()) {
-					field.setRotation(coords, field.getRotation(coords) + dir);
+					field.setRotation(coords, modulo(field.getRotation(coords) + dir));
 					return true;
 				} else
 					return false;
 			}
 			held = new SingletonPieceWrapper(piece, field.getRotation(coords), field.getMeta(coords), field.getMutability(coords));
 			heldCoords = coords;
-			field.setPiece(coords, PieceRegistry.EMPTY);
+			heldField = field;
 			return true;
 		}
 		return false;
@@ -52,8 +53,8 @@ public class MovementHandler {
 				field.setPiece(heldCoords, held.piece);
 				field.setMeta(heldCoords, held.meta);
 				field.setMutability(heldCoords, held.muta);
-				if (Mutability.forMask(field.getMutability(coords)).canRotate())
-					field.setRotation(heldCoords, held.rot + dir);
+				if (Mutability.forMask(field.getMutability(coords)).canRotate() && !hasMoved)
+					field.setRotation(heldCoords, modulo(held.rot + dir));
 				else
 					field.setRotation(heldCoords, held.rot);
 				held = null;
@@ -86,26 +87,26 @@ public class MovementHandler {
 
 	public void updatePos(int mX, int mY, int cX, int cY) {
 		mouseCoords.setX(mX).setY(mY);
-		if (holdingPiece())
-			hasMoved = hasMoved || (heldCoords.getX() != cX || heldCoords.getY() != cY);
+		if (holdingPiece()) {
+			if (!hasMoved && (heldCoords.getX() != cX || heldCoords.getY() != cY)) {
+				heldField.setPiece(heldCoords, PieceRegistry.EMPTY);
+				hasMoved = true;
+			}
+		}
 	}
 
 	public synchronized void bufferRenders(float xSize, float ySize, float ratio) {
-		if (holdingPiece()) {
+		if (holdingPiece() && hasMoved) {
 			String path = held.piece.getTexturePath(held, IntVector.ZERO, held.rot, held.meta);
 			IntVector offset = held.piece.getTextureOffset(held, IntVector.ZERO, held.rot, held.meta);
-			int xPos, yPos;
-			if (hasMoved) {
-				xPos = mouseCoords.getX();
-				yPos = mouseCoords.getY();
-			} else {
-				xPos = heldCoords.getX() * 52 + 27;
-				yPos = heldCoords.getY() * 52 + 27;
-			}
-			RenderManager.bufferQuad(new Quad8I(path, (int) ((float) xPos * 1.965F - xSize - 52F),
-					(int) ((ySize / ratio) - (float) yPos * 1.965F - 52F),
+			RenderManager.bufferQuad(new Quad8I(path, (int) ((float) mouseCoords.getX() * 1.965F - xSize - 52F),
+					(int) ((ySize / ratio) - (float) mouseCoords.getY() * 1.965F - 52F),
 					103, 103, offset.getX(), offset.getY(), 32, 32));
 		}
+	}
+
+	private static int modulo(int rot) {
+		return (rot + 8) % 8;
 	}
 
 	public static class SingletonPieceWrapper implements IGameField {

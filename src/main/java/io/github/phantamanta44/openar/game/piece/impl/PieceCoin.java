@@ -1,6 +1,6 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
-import io.github.phantamanta44.openar.game.Direction;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamColor;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
@@ -36,19 +36,21 @@ public class PieceCoin extends PieceAir implements IGoalPiece {
 	public boolean isGoalMet(IGameField field, IntVector coords, int rot, int meta) {
 		BeamTile beams = field.getBeams(coords);
 		if (meta != 6) {
-			boolean matched = false;
+			Direction matchDir = null;
 			for (Direction dir : Direction.values()) {
 				Beam beam = beams.getIn(dir);
 				if (beam != null) {
 					if (colorMatch(beam.getColor(), meta)) {
-						if (!matched)
-							matched = true;
-						else
+						if (matchDir == null)
+							matchDir = beam.getDir();
+						else if (!(beam.getDir() == matchDir || beam.getDir().getOpposite() == matchDir))
 							return false;
 					}
+					else
+						return false;
 				}
 			}
-			return matched;
+			return matchDir != null;
 		} else {
 			for (Direction dir : Direction.values()) {
 				if (beams.getIn(dir) == null)
