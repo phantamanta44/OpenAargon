@@ -1,6 +1,8 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
 import io.github.phantamanta44.openar.game.beam.Beam;
+import io.github.phantamanta44.openar.game.beam.BeamColor;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -22,7 +24,13 @@ public class PiecePolarizer implements IGamePiece {
 
 	@Override
 	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
-		return Collections.emptyList(); // TODO Implement
+		Direction pass = Direction.fromRotation(rot);
+		if (in.getDir() == pass || in.getDir().getOpposite() == pass) {
+			BeamColor filtered = in.getColor().filter(BeamColor.values()[meta]);
+			if (filtered != BeamColor.BLACK)
+				return Collections.singleton(new Beam(filtered, in.getDir().getOpposite()));
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -32,7 +40,10 @@ public class PiecePolarizer implements IGamePiece {
 
 	@Override
 	public IntVector getTextureOffset(IGameField field, IntVector coords, int rot, int meta) {
-		return new IntVector((rot % 4) * 32, meta * 32); // TODO Make texture
+		int xInd = meta * 32;
+		if (meta == 7)
+			xInd -= 32;
+		return new IntVector(xInd, (rot % 4) * 32); // TODO Make texture
 	}
 
 }

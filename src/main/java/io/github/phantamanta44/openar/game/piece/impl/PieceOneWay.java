@@ -1,6 +1,7 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
 import io.github.phantamanta44.openar.game.beam.Beam;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -22,7 +23,10 @@ public class PieceOneWay implements IGamePiece {
 
 	@Override
 	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
-		return Collections.emptyList(); // TODO Implement
+		Direction pass = Direction.fromRotation((4 + rot) % 8);
+		if (in.getDir() == pass)
+			return Collections.singleton(new Beam(in.getColor(), pass.getOpposite()));
+		return Collections.emptyList();
 	}
 
 	@Override

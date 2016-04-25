@@ -1,10 +1,12 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
 import io.github.phantamanta44.openar.game.beam.Beam;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -22,7 +24,11 @@ public class PieceSplitter implements IGamePiece {
 
 	@Override
 	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
-		return Collections.emptyList(); // TODO Implement
+		if (in.getDir() == Direction.fromRotation(rot)) {
+			return Arrays.asList(new Beam(in.getColor(), Direction.fromRotation((rot + 2) % 8)),
+					new Beam(in.getColor(), Direction.fromRotation((rot + 6) % 8)));
+		}
+		return Collections.emptyList();
 	}
 
 	@Override

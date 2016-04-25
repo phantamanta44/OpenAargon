@@ -3,6 +3,7 @@ package io.github.phantamanta44.openar.game.map;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.game.piece.PieceRegistry;
+import io.github.phantamanta44.openar.game.piece.impl.PieceAir;
 import io.github.phantamanta44.openar.render.Quad8I;
 import io.github.phantamanta44.openar.render.RenderManager;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -30,7 +31,7 @@ public class MovementHandler {
 
 	public boolean grab(GameField field, IntVector coords, int dir) {
 		IGamePiece piece = field.getPiece(coords);
-		if (piece != null && !piece.getToken().equals(" ") && !holdingPiece()) {
+		if (piece != null && !(piece instanceof PieceAir) && !holdingPiece()) {
 			if (!Mutability.forMask(field.getMutability(coords)).canMove()) {
 				if (Mutability.forMask(field.getMutability(coords)).canRotate()) {
 					field.setRotation(coords, modulo(field.getRotation(coords) + dir));
@@ -61,7 +62,7 @@ public class MovementHandler {
 				return true;
 			}
 			IGamePiece endPt = field.getPiece(coords);
-			if (endPt != null && !endPt.getToken().equals(" ")) {
+			if (endPt != null && !(endPt instanceof PieceAir)) {
 				if (!Mutability.forMask(field.getMutability(coords)).canMove()) {
 					field.setPiece(heldCoords, held.piece);
 					field.setRotation(heldCoords, held.rot);

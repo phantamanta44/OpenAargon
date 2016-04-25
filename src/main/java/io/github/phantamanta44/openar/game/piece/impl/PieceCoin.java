@@ -8,7 +8,10 @@ import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.piece.IGoalPiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
 
-public class PieceCoin extends PieceAir implements IGoalPiece {
+import java.util.Collection;
+import java.util.Collections;
+
+public class PieceCoin implements IGoalPiece {
 
 	@Override
 	public String getName() {
@@ -18,6 +21,11 @@ public class PieceCoin extends PieceAir implements IGoalPiece {
 	@Override
 	public String getToken() {
 		return "O";
+	}
+
+	@Override
+	public Collection<Beam> getReflections(IGameField field, IntVector coords, int rot, int meta, Beam in) {
+		return Collections.singleton(new Beam(in.getColor(), in.getDir().getOpposite()));
 	}
 
 	@Override

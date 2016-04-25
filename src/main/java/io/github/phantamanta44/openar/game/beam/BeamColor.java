@@ -21,6 +21,18 @@ public enum BeamColor {
 		this.color = new float[] {r, g, b};
 	}
 
+	public boolean hasRed() {
+		return (bitmask & 0b100) != 0;
+	}
+
+	public boolean hasGreen() {
+		return (bitmask & 0b010) != 0;
+	}
+
+	public boolean hasBlue() {
+		return (bitmask & 0b001) != 0;
+	}
+
 	public BeamColor merge(BeamColor color) {
 		return forMask(color.bitmask | this.bitmask);
 	}
@@ -60,4 +72,5 @@ public enum BeamColor {
 	public float[] getColor() {
 		return color;
 	}
+
 }

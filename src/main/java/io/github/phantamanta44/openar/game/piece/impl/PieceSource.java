@@ -1,9 +1,10 @@
 package io.github.phantamanta44.openar.game.piece.impl;
 
-import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamColor;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.map.IGameField;
+import io.github.phantamanta44.openar.game.map.Mutability;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.game.piece.ISourcePiece;
 import io.github.phantamanta44.openar.util.math.IntVector;
@@ -30,7 +31,10 @@ public class PieceSource implements IGamePiece, ISourcePiece {
 
 	@Override
 	public Collection<Beam> getSourceBeams(IGameField field, IntVector coords, int rot, int meta) {
-		return Collections.singletonList(new Beam(BeamColor.values()[meta], Direction.fromRotation(rot)));
+		BeamColor col = BeamColor.values()[meta];
+		if (col == BeamColor.BLACK)
+			col = BeamColor.WHITE;
+		return Collections.singletonList(new Beam(col, Direction.fromRotation(rot)));
 	}
 
 	@Override
@@ -40,7 +44,11 @@ public class PieceSource implements IGamePiece, ISourcePiece {
 
 	@Override
 	public IntVector getTextureOffset(IGameField field, IntVector coords, int rot, int meta) {
-		return new IntVector((int)Math.floor((float)(System.currentTimeMillis() % 300L) / 75F) * 32, rot * 32);
+		int animFrame = (int)Math.floor((float)(System.currentTimeMillis() % 300L) / 75F) * 32;
+		Mutability m = Mutability.forMask(field.getMutability(coords));
+		if (m.canRotate())
+			animFrame += 128;
+		return new IntVector(animFrame, rot * 32);
 	}
 
 }

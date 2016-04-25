@@ -63,9 +63,9 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.10</version>
+			<groupId>io.github.lukehutch</groupId>
+			<artifactId>fast-classpath-scanner</artifactId>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

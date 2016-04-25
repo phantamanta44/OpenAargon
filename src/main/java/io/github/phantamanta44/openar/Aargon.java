@@ -7,7 +7,6 @@ import io.github.phantamanta44.openar.game.map.MovementHandler;
 import io.github.phantamanta44.openar.game.piece.PieceRegistry;
 import io.github.phantamanta44.openar.input.ButtonAction;
 import io.github.phantamanta44.openar.input.InputManager;
-import io.github.phantamanta44.openar.input.KeyCodes;
 import io.github.phantamanta44.openar.input.ModifierState;
 import io.github.phantamanta44.openar.render.GameWindow;
 import io.github.phantamanta44.openar.util.ThreadPoolFactory;
@@ -18,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ExecutorService;
 
 public class Aargon {
+
+	private static final int KEY_F5 = 294;
 
 	private static Aargon instance;
 	private static Logger logger;
@@ -95,7 +96,7 @@ public class Aargon {
 	}
 
 	public void onKey(int key, ButtonAction action, ModifierState mod) {
-		if (key == KeyCodes.KEY_F5 && action == ButtonAction.RELEASE) {
+		if (key == KEY_F5 && action == ButtonAction.RELEASE) {
 			setMap(map);
 			pieceMover.clearHand();
 		}
