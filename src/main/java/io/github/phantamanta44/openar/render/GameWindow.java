@@ -2,7 +2,6 @@ package io.github.phantamanta44.openar.render;
 
 import io.github.phantamanta44.openar.Aargon;
 import io.github.phantamanta44.openar.Main;
-import io.github.phantamanta44.openar.game.map.GameField;
 import io.github.phantamanta44.openar.util.IOUtils;
 import io.github.phantamanta44.openar.util.math.IntVector;
 import org.lwjgl.BufferUtils;
@@ -77,7 +76,6 @@ public class GameWindow {
 
 				GLFW.glfwMakeContextCurrent(winId);
 				GLFW.glfwSwapInterval(1);
-				GLFW.glfwShowWindow(winId);
 
 				GL.createCapabilities();
 
@@ -116,6 +114,10 @@ public class GameWindow {
 				new Thread(Main::exitRequested, "Exit Thread").run();
 			}
 		});
+	}
+
+	public void show() {
+		GLFW.glfwShowWindow(winId);
 	}
 
 	public void destruct() {
