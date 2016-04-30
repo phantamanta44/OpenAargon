@@ -1,5 +1,6 @@
 package io.github.phantamanta44.openar.game.map;
 
+import io.github.phantamanta44.openar.audio.AudioManager;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
 import io.github.phantamanta44.openar.game.piece.IGamePiece;
 import io.github.phantamanta44.openar.game.piece.PieceRegistry;
@@ -35,6 +36,8 @@ public class MovementHandler {
 			if (!Mutability.forMask(field.getMutability(coords)).canMove()) {
 				if (Mutability.forMask(field.getMutability(coords)).canRotate()) {
 					field.setRotation(coords, modulo(field.getRotation(coords) + dir));
+					AudioManager.play("audio/rotate.wav");
+					field.updateBeams();
 					return true;
 				} else
 					return false;
@@ -48,17 +51,20 @@ public class MovementHandler {
 	}
 
 	public boolean drop(GameField field, IntVector coords, int dir) {
-		hasMoved = false;
 		if (holdingPiece()) {
-			if (coords.equals(heldCoords)) {
+			if (!hasMoved) {
 				field.setPiece(heldCoords, held.piece);
 				field.setMeta(heldCoords, held.meta);
 				field.setMutability(heldCoords, held.muta);
-				if (Mutability.forMask(field.getMutability(coords)).canRotate() && !hasMoved)
+				if (Mutability.forMask(field.getMutability(coords)).canRotate() && !hasMoved) {
 					field.setRotation(heldCoords, modulo(held.rot + dir));
+					AudioManager.play("audio/rotate.wav");
+				}
 				else
 					field.setRotation(heldCoords, held.rot);
 				held = null;
+				hasMoved = false;
+				field.updateBeams();
 				return true;
 			}
 			IGamePiece endPt = field.getPiece(coords);
@@ -69,6 +75,9 @@ public class MovementHandler {
 					field.setMeta(heldCoords, held.meta);
 					field.setMutability(heldCoords, held.muta);
 					held = null;
+					hasMoved = false;
+					field.updateBeams();
+					AudioManager.play("audio/fail.wav");
 					return false;
 				}
 				field.setPiece(heldCoords, endPt);
@@ -81,6 +90,9 @@ public class MovementHandler {
 			field.setMeta(coords, held.meta);
 			field.setMutability(coords, held.muta);
 			held = null;
+			hasMoved = false;
+			field.updateBeams();
+			AudioManager.play("audio/drop.wav");
 			return true;
 		}
 		return false;
@@ -91,7 +103,9 @@ public class MovementHandler {
 		if (holdingPiece()) {
 			if (!hasMoved && (heldCoords.getX() != cX || heldCoords.getY() != cY)) {
 				heldField.setPiece(heldCoords, PieceRegistry.EMPTY);
+				heldField.updateBeams();
 				hasMoved = true;
+				AudioManager.play("audio/grab.wav");
 			}
 		}
 	}

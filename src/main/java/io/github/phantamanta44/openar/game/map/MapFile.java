@@ -46,6 +46,7 @@ public class MapFile {
 			f.setMeta(c, metaGrid.get(c));
 			f.setMutability(c, intGrid.get(c));
 		});
+		f.updateBeams();
 	}
 
 }

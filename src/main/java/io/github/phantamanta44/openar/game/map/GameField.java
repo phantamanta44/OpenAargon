@@ -1,9 +1,9 @@
 package io.github.phantamanta44.openar.game.map;
 
 import io.github.phantamanta44.openar.Aargon;
-import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.beam.Beam;
 import io.github.phantamanta44.openar.game.beam.BeamTile;
+import io.github.phantamanta44.openar.game.beam.Direction;
 import io.github.phantamanta44.openar.game.piece.*;
 import io.github.phantamanta44.openar.render.Line4I;
 import io.github.phantamanta44.openar.render.Quad8I;
@@ -31,13 +31,25 @@ public class GameField implements IGameField {
 		intGrid.fill(() -> 0);
 	}
 
-	private void updateBeams() {
-		goal = fail = false;
+	public void updateBeams() {
 		beamGrid.forEach((b, c) -> b.clear());
 		pieceGrid.forEach((p, c) -> {
 			if (p instanceof ISourcePiece)
 				((ISourcePiece)p).getSourceBeams(this, c, getRotation(c), getMeta(c)).forEach(b -> sourceBeam(b.clone(), c));
 		});
+		goal = true;
+		fail = false;
+		pieceGrid.forEach((p, c) -> {
+			int rot = getRotation(c), meta = getMeta(c);
+			if (p instanceof IGoalPiece)
+				goal &= ((IGoalPiece)p).isGoalMet(this, c, rot, meta);
+			if (p instanceof IFailPiece)
+				fail |= ((IFailPiece)p).isFailing(this, c, rot, meta);
+		});
+		if (fail)
+			Aargon.getLogger().info("SYSTEM FAILING");
+		else if (goal)
+			Aargon.getLogger().info("SYSTEM SOLVED"); // TODO Pass winning/failing state to Aargon and do something
 	}
 
 	private void sourceBeam(Beam beam, IntVector coords) {
@@ -65,15 +77,7 @@ public class GameField implements IGameField {
 		Beam out = beams.getOut(beam.getDir().getOpposite());
 		if (out != null)
 			out.merge(newBeam);
-		if (piece instanceof IGoalPiece)
-			goal &= ((IGoalPiece)piece).isGoalMet(this, coords, rot, meta);
-		if (piece instanceof IFailPiece)
-			fail &= ((IFailPiece)piece).isFailing(this, coords, rot, meta);
 		piece.getReflections(this, coords, rot, meta, new Beam(beam.getColor(), beam.getDir().getOpposite())).forEach(b -> sourceBeam(b, coords));
-		if (fail)
-			Aargon.getLogger().info("SYSTEM FAILING");
-		else if (goal)
-			Aargon.getLogger().info("SYSTEM SOLVED"); // TODO Pass winning/failing state to Aargon and do something
 	}
 
 	public void setPiece(IntVector coords, IGamePiece piece) {
@@ -81,17 +85,14 @@ public class GameField implements IGameField {
 		rotGrid.set(coords, 0);
 		metaGrid.set(coords, 0);
 		intGrid.set(coords, 0);
-		updateBeams();
 	}
 
 	public void setRotation(IntVector coords, int rotation) {
 		rotGrid.set(coords, rotation);
-		updateBeams();
 	}
 
 	public void setMeta(IntVector coords, int meta) {
 		metaGrid.set(coords, meta);
-		updateBeams();
 	}
 
 	public void setMutability(IntVector coords, int muta) {

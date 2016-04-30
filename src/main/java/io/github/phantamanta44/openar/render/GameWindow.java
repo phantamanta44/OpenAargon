@@ -106,9 +106,9 @@ public class GameWindow {
 
 					GLFW.glfwPollEvents();
 				}
-			} catch (Exception ex) {
+			} catch (Exception e) {
 				Aargon.getLogger().error("Graphics thread errored!");
-				ex.printStackTrace();
+				e.printStackTrace();
 			} finally {
 				destruct();
 				new Thread(Main::exitRequested, "Exit Thread").run();

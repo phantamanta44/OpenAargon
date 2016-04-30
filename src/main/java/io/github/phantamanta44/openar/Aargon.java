@@ -1,5 +1,7 @@
 package io.github.phantamanta44.openar;
 
+import io.github.phantamanta44.openar.audio.AudioManager;
+import io.github.phantamanta44.openar.audio.GameAudio;
 import io.github.phantamanta44.openar.game.map.GameField;
 import io.github.phantamanta44.openar.game.map.IGameField;
 import io.github.phantamanta44.openar.game.map.MapFile;
@@ -14,6 +16,7 @@ import io.github.phantamanta44.openar.util.math.IntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 public class Aargon {
@@ -26,6 +29,7 @@ public class Aargon {
 	private ExecutorService threadPool;
 	private InputManager inputManager;
 	private GameWindow window;
+	private GameAudio audio;
 
 	private MapFile map;
 	private GameField field;
@@ -37,11 +41,6 @@ public class Aargon {
 		else
 			throw new IllegalStateException("OpenAargon already initialized!");
 		instance.initInstance();
-	}
-
-	public static void onExit() {
-		logger.info("OpenAargon shutting down!");
-		instance.threadPool.shutdownNow();
 	}
 
 	public static Aargon getInstance() {
@@ -75,6 +74,21 @@ public class Aargon {
 		logger.info("Initializing game window...");
 		window = new GameWindow();
 		window.init();
+
+		logger.info("Initializing audio manager...");
+		audio = new GameAudio();
+		audio.init();
+
+		logger.info("Loading audio files...");
+		try {
+			AudioManager.load("audio/grab.wav");
+			AudioManager.load("audio/drop.wav");
+			AudioManager.load("audio/rotate.wav");
+			AudioManager.load("audio/fail.wav");
+		} catch (IOException e) {
+			logger.error("Errored while loading audio!");
+			e.printStackTrace();
+		}
 	}
 
 	public GameWindow getWindowManager() {
@@ -83,6 +97,10 @@ public class Aargon {
 
 	public InputManager getInputManager() {
 		return inputManager;
+	}
+
+	public GameAudio getAudioManager() {
+		return audio;
 	}
 
 	public void setMap(MapFile newMap) {
@@ -127,8 +145,10 @@ public class Aargon {
 		}
 	}
 
-	public void destruct() {
-		window.destruct();
+	public static void onExit() {
+		logger.info("OpenAargon shutting down!");
+		instance.audio.destruct();
+		instance.threadPool.shutdownNow();
 	}
 
 	public ExecutorService getThreadPool() {
